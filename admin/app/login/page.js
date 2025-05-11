@@ -145,111 +145,113 @@ export default function LoginPage() {
 	return status === 'loading' ? (
 		<FullScreenLoader />
 	) : (
-		<div className='mt-10 w-md mx-auto shadow-2xl/20 shadow-[#08d4ec] rounded-xl p-7'>
-			<div className='flex justify-center items-center mb-6'>
-				<img
-					src='logo.png'
-					className='select-none drag-none w-10 rounded-md border-2 border-[#08d4ec] mr-4'
-				/>
-				<h1 className=' text-3xl font-bold'>POIZON IS</h1>
+		<div className='w-screen'>
+			<div className='mt-10 w-md mx-auto shadow-2xl/20 shadow-[#08d4ec] rounded-xl p-7'>
+				<div className='flex justify-center items-center mb-6'>
+					<img
+						src='logo.png'
+						className='select-none drag-none w-10 rounded-md border-2 border-[#08d4ec] mr-4'
+					/>
+					<h1 className=' text-3xl font-bold'>POIZON IS</h1>
+				</div>
+				<Form {...form}>
+					<form
+						onSubmit={form.handleSubmit(handleSubmit)}
+						className='flex flex-col gap-6'
+					>
+						<FormField
+							control={form.control}
+							name='emailAddress'
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel>Email</FormLabel>
+										<FormControl>
+											<Input
+												onChangeCapture={e => setEmail(e.target.value)}
+												placeholder='example@gmail.com'
+												disabled={loading}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)
+							}}
+						/>
+						<FormField
+							control={form.control}
+							name='password'
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel>Пароль</FormLabel>
+										<FormControl>
+											<Input
+												onChangeCapture={e => setPassword(e.target.value)}
+												placeholder='Пароль'
+												type='password'
+												disabled={loading}
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)
+							}}
+						/>
+						<Button type='submit' className='cursor-pointer' disabled={loading}>
+							{loading && <Loader2 className='animate-spin' />}
+							Вход
+						</Button>
+						<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+							<DialogContent>
+								<DialogHeader>
+									<DialogTitle>Подтверждение личности</DialogTitle>
+									<DialogDescription>
+										Код верификации отправлен на адрес{' '}
+										<span className=' text-green-300'>{email}</span>. Чтобы
+										продолжить, введите этот код.
+									</DialogDescription>
+								</DialogHeader>
+								<div className={'mx-auto '}>
+									<InputOTP
+										maxLength={6}
+										pattern={REGEXP_ONLY_DIGITS}
+										value={inputValue}
+										onChange={e => setInputValue(e)}
+										onComplete={onComplete}
+										disabled={isValid}
+									>
+										<InputOTPGroup>
+											<InputOTPSlot index={0} />
+											<InputOTPSlot index={1} />
+											<InputOTPSlot index={2} />
+										</InputOTPGroup>
+										{isValid ? (
+											<Loader2 className='animate-spin' />
+										) : (
+											<InputOTPSeparator />
+										)}
+										<InputOTPGroup>
+											<InputOTPSlot index={3} />
+											<InputOTPSlot index={4} />
+											<InputOTPSlot index={5} />
+										</InputOTPGroup>
+									</InputOTP>
+								</div>
+								<DialogFooter>
+									<DialogClose asChild disabled={isValid}>
+										<Button type='button' variant='secondary'>
+											Отмена
+										</Button>
+									</DialogClose>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
+					</form>
+				</Form>
 			</div>
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(handleSubmit)}
-					className='flex flex-col gap-6'
-				>
-					<FormField
-						control={form.control}
-						name='emailAddress'
-						render={({ field }) => {
-							return (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											onChangeCapture={e => setEmail(e.target.value)}
-											placeholder='example@gmail.com'
-											disabled={loading}
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)
-						}}
-					/>
-					<FormField
-						control={form.control}
-						name='password'
-						render={({ field }) => {
-							return (
-								<FormItem>
-									<FormLabel>Пароль</FormLabel>
-									<FormControl>
-										<Input
-											onChangeCapture={e => setPassword(e.target.value)}
-											placeholder='Пароль'
-											type='password'
-											disabled={loading}
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)
-						}}
-					/>
-					<Button type='submit' className='cursor-pointer' disabled={loading}>
-						{loading && <Loader2 className='animate-spin' />}
-						Вход
-					</Button>
-					<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Подтверждение личности</DialogTitle>
-								<DialogDescription>
-									Код верификации отправлен на адрес{' '}
-									<span className=' text-green-300'>{email}</span>. Чтобы
-									продолжить, введите этот код.
-								</DialogDescription>
-							</DialogHeader>
-							<div className={'mx-auto '}>
-								<InputOTP
-									maxLength={6}
-									pattern={REGEXP_ONLY_DIGITS}
-									value={inputValue}
-									onChange={e => setInputValue(e)}
-									onComplete={onComplete}
-									disabled={isValid}
-								>
-									<InputOTPGroup>
-										<InputOTPSlot index={0} />
-										<InputOTPSlot index={1} />
-										<InputOTPSlot index={2} />
-									</InputOTPGroup>
-									{isValid ? (
-										<Loader2 className='animate-spin' />
-									) : (
-										<InputOTPSeparator />
-									)}
-									<InputOTPGroup>
-										<InputOTPSlot index={3} />
-										<InputOTPSlot index={4} />
-										<InputOTPSlot index={5} />
-									</InputOTPGroup>
-								</InputOTP>
-							</div>
-							<DialogFooter>
-								<DialogClose asChild disabled={isValid}>
-									<Button type='button' variant='secondary'>
-										Отмена
-									</Button>
-								</DialogClose>
-							</DialogFooter>
-						</DialogContent>
-					</Dialog>
-				</form>
-			</Form>
 		</div>
 	)
 }
