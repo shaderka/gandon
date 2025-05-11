@@ -6,7 +6,7 @@ export async function GET(req) {
 
 	try {
 		const res = await axios.get(
-			process.env.POIZON_API_SERVER + '/productDetail',
+			process.env.POIZON_API_SERVER + '/productDetailWithPrice',
 			{
 				params: { spuId },
 				headers: {
@@ -15,7 +15,7 @@ export async function GET(req) {
 				},
 			}
 		)
-
+		await new Promise(resolve => setTimeout(resolve, 1000))
 		return NextResponse.json(res.data)
 	} catch (error) {
 		console.log(error)

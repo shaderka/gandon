@@ -1,7 +1,12 @@
 'use client'
 
 import { SessionProvider } from 'next-auth/react'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
-export const AuthProvider = ({ children }) => {
-	return <SessionProvider>{children}</SessionProvider>
+export const Providers = ({ children }) => {
+	return (
+		<SessionProvider>
+			<SidebarProvider>{children}</SidebarProvider>
+		</SessionProvider>
+	)
 }

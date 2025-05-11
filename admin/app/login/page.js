@@ -36,6 +36,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
+import FullScreenLoader from '@/components/loader'
+import { redirect } from 'next/navigation'
 
 const formSchema = z.object({
 	emailAddress: z.string().email({
@@ -55,6 +58,12 @@ export default function LoginPage() {
 	const [OTP, setOTP] = useState('')
 	const [inputValue, setInputValue] = useState('')
 	const [isValid, setIsValid] = useState(false)
+	const session = useSession()
+	const { status } = session
+
+	if (status === 'authenticated') {
+		redirect('/')
+	}
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -97,7 +106,7 @@ export default function LoginPage() {
 					password,
 					redirect: false,
 				})
-				if (!res.error) router.push('/')
+				//	if (!res.error) router.push('/')
 			} catch (error) {
 				console.log(error)
 			}
@@ -133,8 +142,10 @@ export default function LoginPage() {
 		setLoading(false)
 	}
 
-	return (
-		<div className='mt-10 max-w-md mx-auto shadow-2xl/20 shadow-[#08d4ec] rounded-xl p-7'>
+	return status === 'loading' ? (
+		<FullScreenLoader />
+	) : (
+		<div className='mt-10 w-md mx-auto shadow-2xl/20 shadow-[#08d4ec] rounded-xl p-7'>
 			<div className='flex justify-center items-center mb-6'>
 				<img
 					src='logo.png'
