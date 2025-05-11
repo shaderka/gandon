@@ -93,7 +93,6 @@ export default function LoginPage() {
 			.then(data => {
 				console.log(data)
 			})
-		toast(otp)
 		setOTP(otp)
 	}
 
