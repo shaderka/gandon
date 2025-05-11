@@ -4,7 +4,7 @@ import { Category } from '@/app/models/Category'
 import { connectMongoDB } from '@/lib/mongodb'
 
 export async function GET(req) {
-	const lang = 'RU'
+	const lang = 'ZH'
 	try {
 		const res = await axios.get(
 			process.env.POIZON_API_SERVER + '/getCategories',
@@ -21,13 +21,15 @@ export async function GET(req) {
 		// 	return {
 		// 		id: cat.id,
 		// 		name: cat.name,
-		// 		level: cat.level,
-		// 		pid: cat.pid,
-		// 		rootId: cat.rootId,
-		// 		exists: false,
+		// 		// 		level: cat.level,
+		// 		// 		pid: cat.pid,
+		// 		// 		rootId: cat.rootId,
+		// 		// 		exists: false,
 		// 	}
 		// })
-		// trueCats.map(async cat => await Category.create(cat))
+		// trueCats.map(
+		// 	async cat => await Category.updateOne({ id: cat.id }, { zh: cat.name })
+		// )
 		await new Promise(resolve => setTimeout(resolve, 1000))
 		return Response.json(true)
 	} catch (error) {

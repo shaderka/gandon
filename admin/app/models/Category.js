@@ -4,6 +4,7 @@ const CategorySchema = new Schema(
 	{
 		id: Number,
 		name: String,
+		zh: String,
 		level: Number,
 		pid: Number,
 		rootId: Number,

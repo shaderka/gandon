@@ -36,6 +36,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Toggle } from '@/components/ui/toggle'
+import {
+	ContextMenu,
+	ContextMenuContent,
+	ContextMenuItem,
+	ContextMenuTrigger,
+} from '@/components/ui/context-menu'
 
 export default function ItemsPage() {
 	const [url, setUrl] = useState('')
@@ -294,16 +301,12 @@ export default function ItemsPage() {
 											Вставьте ссылку на товар из приложения
 										</DialogDescription>
 										<div className='flex items-center gap-3'>
-											<div className='flex items-center border-1 rounded-md p-2 gap-2'>
-												<Checkbox
-													id='trans'
-													checked={translate}
-													onCheckedChange={setTranslate}
-												/>
-												<Label htmlFor='trans' className='cursor-pointer'>
-													<Languages />
-												</Label>
-											</div>
+											<Toggle
+												pressed={translate}
+												onPressedChange={setTranslate}
+											>
+												<Languages />
+											</Toggle>
 											<Input
 												className='flex-grow'
 												placeholder='https://dw4.co/...'
@@ -351,11 +354,28 @@ export default function ItemsPage() {
 											</div>
 											<div className='flex items-center gap-2'>
 												<div className='flex items-center gap-1 flex-grow'>
-													<Input
-														disabled={!edit3}
-														value={supSupCat}
-														onChange={e => setSupSupCat(e.target.value)}
-													/>
+													<ContextMenu>
+														<ContextMenuTrigger asChild>
+															<Input
+																disabled={!edit3}
+																value={supSupCat}
+																onChange={e => setSupSupCat(e.target.value)}
+															/>
+														</ContextMenuTrigger>
+														<ContextMenuContent>
+															<ContextMenuItem
+																onClick={async () => {
+																	await navigator.clipboard.writeText(
+																		cats[2]?.zh
+																	),
+																		toast.success('Скопировано')
+																}}
+															>
+																Копировать перевод
+															</ContextMenuItem>
+														</ContextMenuContent>
+													</ContextMenu>
+
 													{edit3 ? (
 														<>
 															<Button
@@ -404,11 +424,28 @@ export default function ItemsPage() {
 													)}
 												</div>
 												<div className='flex items-center gap-1 flex-grow'>
-													<Input
-														disabled={!edit2}
-														value={supCat}
-														onChange={e => setSupCat(e.target.value)}
-													/>
+													<ContextMenu>
+														<ContextMenuTrigger asChild>
+															<Input
+																disabled={!edit2}
+																value={supCat}
+																onChange={e => setSupCat(e.target.value)}
+															/>
+														</ContextMenuTrigger>
+														<ContextMenuContent>
+															<ContextMenuItem
+																onClick={async () => {
+																	await navigator.clipboard.writeText(
+																		cats[1]?.zh
+																	),
+																		toast.success('Скопировано')
+																}}
+															>
+																Копировать перевод
+															</ContextMenuItem>
+														</ContextMenuContent>
+													</ContextMenu>
+
 													{edit2 ? (
 														<>
 															<Button
@@ -455,11 +492,28 @@ export default function ItemsPage() {
 													)}
 												</div>
 												<div className='flex items-center gap-1 flex-grow'>
-													<Input
-														disabled={!edit1}
-														value={cat}
-														onChange={e => setCat(e.target.value)}
-													/>
+													<ContextMenu>
+														<ContextMenuTrigger asChild>
+															<Input
+																disabled={!edit1}
+																value={cat}
+																onChange={e => setCat(e.target.value)}
+															/>
+														</ContextMenuTrigger>
+														<ContextMenuContent>
+															<ContextMenuItem
+																onClick={async () => {
+																	await navigator.clipboard.writeText(
+																		cats[0]?.zh
+																	),
+																		toast.success('Скопировано')
+																}}
+															>
+																Копировать перевод
+															</ContextMenuItem>
+														</ContextMenuContent>
+													</ContextMenu>
+
 													{edit1 ? (
 														<>
 															<Button
