@@ -2,19 +2,23 @@ import { connectMongoDB } from '@/lib/mongodb'
 import { Category } from '@/app/models/Category'
 
 export async function POST(req) {
-	const { catId } = await req.json()
-	await connectMongoDB()
-	const cat = await Category.findOne({ id: catId })
+	try {
+		const { catId } = await req.json()
+		await connectMongoDB()
+		const cat = await Category.findOne({ id: catId })
 
-	if (cat.level == 3) {
-		const supCat = await Category.findOne({ id: cat.pid })
-		const supSupCat = await Category.findOne({ id: supCat.pid })
-		return Response.json([cat, supCat, supSupCat])
-	} else {
-		if (cat.level == 2) {
+		if (cat.level == 3) {
 			const supCat = await Category.findOne({ id: cat.pid })
-			return Response.json([cat, supCat])
-		} else return Response.json([cat])
+			const supSupCat = await Category.findOne({ id: supCat.pid })
+			return Response.json([cat, supCat, supSupCat])
+		} else {
+			if (cat.level == 2) {
+				const supCat = await Category.findOne({ id: cat.pid })
+				return Response.json([cat, supCat])
+			} else return Response.json([cat])
+		}
+	} catch (error) {
+		return Response.json(false)
 	}
 }
 export async function PUT(req) {

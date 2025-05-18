@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { NextResponse } from 'next/server'
+import { connectMongoDB } from '@/lib/mongodb'
+import { Item } from '@/app/models/Item'
 
-export async function GET(req) {
-	const link = req.nextUrl.searchParams.get('link')
+export async function POST(req) {
+	const { link } = await req.json()
 
 	try {
 		const res = await axios.get(
@@ -16,7 +18,11 @@ export async function GET(req) {
 			}
 		)
 		await new Promise(resolve => setTimeout(resolve, 1000))
-		return NextResponse.json(res.data)
+		await connectMongoDB()
+		const gg = await Item.findOne({ spuId: res.data.spuId })
+		if (gg) return Response.json({ message: 'exists' }, { status: 444 })
+		console.log(res.data)
+		return Response.json(res.data)
 	} catch (error) {
 		console.log(error)
 	}

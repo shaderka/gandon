@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import {
@@ -43,6 +43,8 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from '@/components/ui/context-menu'
+import { DataTable } from '@/components/data-table'
+import { columns } from '@/components/itemsColumns/columns'
 
 export default function ItemsPage() {
 	const [url, setUrl] = useState('')
@@ -65,6 +67,10 @@ export default function ItemsPage() {
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [translate, setTranslate] = useState(false)
 
+	const [data, setData] = useState([])
+	const [filter, setFilter] = useState('')
+	const [tableLoad, setTableLoad] = useState(true)
+
 	const [link, setLink] = useState('')
 	const [loading, setLoading] = useState(false)
 
@@ -73,6 +79,36 @@ export default function ItemsPage() {
 	if (status === 'unauthenticated') {
 		redirect('login')
 	}
+
+	useEffect(() => {
+		getData()
+	}, [])
+
+	const getData = async () => {
+		fetch('/api/items')
+			.then(res => res.json())
+			.then(async res => {
+				const rawDat = await Promise.all(
+					res.map(async item => {
+						const newItem = { ...item }
+						const response = await fetch('/api/categories', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ catId: item.category }),
+						})
+						const cats = await response.json()
+						newItem.catName = cats[0]?.name
+						return newItem
+					})
+				)
+				setData(rawDat)
+				setTableLoad(false)
+			})
+	}
+
+	const filtered = data.filter(item =>
+		item.title?.toLowerCase().includes(filter.toLowerCase())
+	)
 
 	async function translateClient(text) {
 		const res = await fetch('/api/translate', {
@@ -161,18 +197,24 @@ export default function ItemsPage() {
 			})
 		)
 	}
-
 	const getID = async url => {
 		setLoading(true)
 		try {
-			const res = await axios.get('/api/getSpuId', {
-				params: {
-					link: url,
-				},
+			const res = await fetch('/api/getSpuId', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ link: url }),
 			})
+			const { status } = res
+			if (status === 444) {
+				toast.error('Запись уже существует')
+				setLoading(false)
+				return false
+			}
+			const ress = await res.json()
 			const res2 = await axios.get('/api/getProductDetail', {
 				params: {
-					id: res.data.spuId,
+					id: ress.spuId,
 				},
 			})
 			setUrl(res2.data.shareInfo.shareLinkUrl)
@@ -210,10 +252,12 @@ export default function ItemsPage() {
 						setCats(cats)
 				})
 			)
-
 			setBrand({
 				brandLogo: res2.data.brandRootInfo.brandItemList[0].brandLogo,
-				brandName: res2.data.brandRootInfo.brandItemList[0].brandName,
+				brandName: res2.data.brandRootInfo.brandItemList[0].brandName.replace(
+					/[^a-zA-Z\s0-9]/g,
+					''
+				),
 				brandId: res2.data.brandRootInfo.brandItemList[0].brandId,
 			})
 			setSizes(res2.data.sizeDto.sizeInfo.sizeTemplate.list)
@@ -247,6 +291,7 @@ export default function ItemsPage() {
 				})
 
 				if (res.ok) {
+					getData()
 					setDialogOpen(false)
 					toast.success('Запись сохранена')
 					setUrl('')
@@ -284,7 +329,11 @@ export default function ItemsPage() {
 					<div className='flex justify-between items-center'>
 						<div className='flex items-center w-[40%] gap-3'>
 							<Search />
-							<Input placeholder='Поиск...' />
+							<Input
+								placeholder='Поиск...'
+								value={filter}
+								onChange={e => setFilter(e.target.value)}
+							/>
 						</div>
 
 						<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -638,7 +687,10 @@ export default function ItemsPage() {
 					</div>
 				</CardHeader>
 				<CardContent>
-					<p>Таблица</p>
+					<DataTable
+						columns={columns({ refreshItems: getData })}
+						data={filtered}
+					></DataTable>
 				</CardContent>
 			</Card>
 		</div>
