@@ -14,7 +14,7 @@ import { Ellipsis } from 'lucide-react'
 import { useState } from 'react'
 import DeleteProductDialog from '../ConfirmDeleteDialog'
 
-export const columns = ({ refreshItems }) => [
+export const columns = ({ refreshItems, onEdit }) => [
 	{
 		accessorKey: 'logoUrl',
 		header: 'Фото',
@@ -69,7 +69,9 @@ export const columns = ({ refreshItems }) => [
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem>Редактировать</DropdownMenuItem>
+							<DropdownMenuItem onClick={() => onEdit(product)}>
+								Редактировать
+							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
 								<DeleteProductDialog
 									product={product}

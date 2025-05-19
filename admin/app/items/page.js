@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/context-menu'
 import { DataTable } from '@/components/data-table'
 import { columns } from '@/components/itemsColumns/columns'
+import TableLoader from '@/components/TableLoade'
 
 export default function ItemsPage() {
 	const [url, setUrl] = useState('')
@@ -66,6 +67,7 @@ export default function ItemsPage() {
 	const [article, setArticle] = useState('')
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [translate, setTranslate] = useState(false)
+	const [edit, setEdit] = useState(false)
 
 	const [data, setData] = useState([])
 	const [filter, setFilter] = useState('')
@@ -268,49 +270,105 @@ export default function ItemsPage() {
 		setLoading(false)
 	}
 
+	const handleEdit = async item => {
+		setEdit(true)
+		setUrl(item.url)
+		setSpu(item.spuId)
+		setTitle(item.title)
+		setParams(item.basicParam)
+		setDesc(item.description)
+		setImages(item.imagesUrl)
+		setLogo(item.logoUrl)
+		await fetch('/api/categories', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ catId: item.category }),
+		}).then(res =>
+			res.json().then(cats => {
+				setCat(cats[0].name),
+					setSupCat(cats[1].name),
+					setSupSupCat(cats[2].name),
+					setCats(cats)
+			})
+		)
+		setBrand(item.brandRootInfo)
+		setSizes(item.sizeDto)
+		setArticle(item.articleNumber)
+		setDialogOpen(true)
+	}
+
+	const handleClose = isOpen => {
+		setDialogOpen(isOpen)
+		if (edit) {
+			clearStates()
+			setEdit(false)
+		}
+	}
+
+	const clearStates = () => {
+		getData()
+		setDialogOpen(false)
+		setUrl('')
+		setSpu(0)
+		setTitle('')
+		setDesc('')
+		setImages([])
+		setLogo('')
+		setCats([])
+		setCat('')
+		setEdit1(false)
+		setEdit2(false)
+		setEdit3(false)
+		setSupCat('')
+		setSupSupCat('')
+		setParams([])
+		setBrand({})
+		setSizes([])
+		setArticle('')
+	}
+
 	const handleSubmit = async e => {
 		e.preventDefault()
 		if (!edit1 && !edit2 && !edit3 && url && title && desc) {
 			try {
-				const res = await fetch('/api/items', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						url,
-						spuId: spu,
-						title,
-						description: desc,
-						imagesUrl: images,
-						logoUrl: logo,
-						basicParam: params,
-						category: cats[0].id,
-						brandRootInfo: brand,
-						sizeDto: sizes,
-						articleNumber: article,
-					}),
-				})
-
-				if (res.ok) {
-					getData()
-					setDialogOpen(false)
-					toast.success('Запись сохранена')
-					setUrl('')
-					setSpu(0)
-					setTitle('')
-					setDesc('')
-					setImages([])
-					setLogo('')
-					setCats([])
-					setCat('')
-					setEdit1(false)
-					setEdit2(false)
-					setEdit3(false)
-					setSupCat('')
-					setSupSupCat('')
-					setParams([])
-					setBrand({})
-					setSizes([])
-					setArticle('')
+				if (!edit) {
+					const res = await fetch('/api/items', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							url,
+							spuId: spu,
+							title,
+							description: desc,
+							imagesUrl: images,
+							logoUrl: logo,
+							basicParam: params,
+							category: cats[0].id,
+							brandRootInfo: brand,
+							sizeDto: sizes,
+							articleNumber: article,
+						}),
+					})
+					if (res.ok) {
+						toast.success('Запись сохранена')
+						clearStates()
+					}
+				} else {
+					const res = await fetch('/api/items', {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							spuId: spu,
+							title,
+							description: desc,
+							imagesUrl: images,
+							basicParam: params,
+						}),
+					})
+					if (res.ok) {
+						toast.success('Запись сохранена')
+						clearStates()
+					}
 				}
 			} catch (error) {
 				console.log(error)
@@ -336,7 +394,11 @@ export default function ItemsPage() {
 							/>
 						</div>
 
-						<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+						<Dialog
+							open={dialogOpen}
+							onOpenChange={handleClose}
+							onClose={handleClose}
+						>
 							<DialogTrigger asChild>
 								<Button>
 									Добавить <Plus />
@@ -345,38 +407,44 @@ export default function ItemsPage() {
 							<DialogContent className='!max-w-fit'>
 								<form onSubmit={e => handleSubmit(e)}>
 									<DialogHeader className='mb-5'>
-										<DialogTitle>Новый товар</DialogTitle>
-										<DialogDescription>
-											Вставьте ссылку на товар из приложения
-										</DialogDescription>
-										<div className='flex items-center gap-3'>
-											<Toggle
-												pressed={translate}
-												onPressedChange={setTranslate}
-											>
-												<Languages />
-											</Toggle>
-											<Input
-												className='flex-grow'
-												placeholder='https://dw4.co/...'
-												onChange={e => setLink(e.target.value.trim())}
-												value={link}
-											/>
-											<Button
-												variant='secondary'
-												className='self-end'
-												onClick={() => getID(link)}
-												disabled={loading || !link}
-												type='button'
-											>
-												{loading ? (
-													<Loader2 className='animate-spin' />
-												) : (
-													<Search />
-												)}
-												Найти
-											</Button>
-										</div>
+										<DialogTitle>
+											{edit ? <>Редактирование</> : <>Новый товар</>}
+										</DialogTitle>
+										{!edit && (
+											<>
+												<DialogDescription>
+													Вставьте ссылку на товар из приложения
+												</DialogDescription>
+												<div className='flex items-center gap-3'>
+													<Toggle
+														pressed={translate}
+														onPressedChange={setTranslate}
+													>
+														<Languages />
+													</Toggle>
+													<Input
+														className='flex-grow'
+														placeholder='https://dw4.co/...'
+														onChange={e => setLink(e.target.value.trim())}
+														value={link}
+													/>
+													<Button
+														variant='secondary'
+														className='self-end'
+														onClick={() => getID(link)}
+														disabled={loading || !link}
+														type='button'
+													>
+														{loading ? (
+															<Loader2 className='animate-spin' />
+														) : (
+															<Search />
+														)}
+														Найти
+													</Button>
+												</div>
+											</>
+										)}
 									</DialogHeader>
 									<ScrollArea className='rounded-md border h-[60vh] '>
 										<div className='w-[50vw] flex flex-col gap-4 m-5'>
@@ -687,10 +755,14 @@ export default function ItemsPage() {
 					</div>
 				</CardHeader>
 				<CardContent>
-					<DataTable
-						columns={columns({ refreshItems: getData })}
-						data={filtered}
-					></DataTable>
+					{tableLoad ? (
+						<TableLoader />
+					) : (
+						<DataTable
+							columns={columns({ refreshItems: getData, onEdit: handleEdit })}
+							data={filtered}
+						></DataTable>
+					)}
 				</CardContent>
 			</Card>
 		</div>

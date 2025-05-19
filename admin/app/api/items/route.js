@@ -16,3 +16,10 @@ export async function GET() {
 	const items = await Item.find().limit(100).lean()
 	return NextResponse.json(items)
 }
+
+export async function PUT(req) {
+	await connectMongoDB()
+	const { spuId, ...data } = await req.json()
+	await Item.findOneAndUpdate({ spuId: spuId }, data)
+	return Response.json(true)
+}
