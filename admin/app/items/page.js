@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import {
 	Plus,
@@ -365,8 +366,8 @@ export default function ItemsPage() {
 						body: JSON.stringify({
 							url,
 							spuId: spu,
-							title,
-							description: desc,
+							title: title.trim(),
+							description: desc.trim().replace(' .', '.'),
 							imagesUrl: images,
 							logoUrl: logo,
 							basicParam: params,
@@ -386,8 +387,8 @@ export default function ItemsPage() {
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
 							spuId: spu,
-							title,
-							description: desc,
+							title: title.trim(),
+							description: desc.trim().replace(' .', '.'),
 							imagesUrl: images,
 							basicParam: params,
 						}),
@@ -475,7 +476,13 @@ export default function ItemsPage() {
 									</DialogHeader>
 									<ScrollArea className='rounded-md border h-[60vh] '>
 										<div className='w-[50vw] flex flex-col gap-4 m-5'>
-											<div className='flex items-center gap-6'>
+											<div className='flex items-center gap-6 relative'>
+												<Badge
+													variant='secondary'
+													className='absolute right-0 -top-2 z-50'
+												>
+													{article}
+												</Badge>
 												{logo ? (
 													<img
 														src={logo}
@@ -732,7 +739,7 @@ export default function ItemsPage() {
 													id='desc'
 													value={desc}
 													onChange={e => setDesc(e.target.value)}
-													className='resize-none h-15'
+													className=' h-15'
 												/>
 											</div>
 											{params.map((param, index) => (
