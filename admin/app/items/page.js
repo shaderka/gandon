@@ -20,6 +20,9 @@ import {
 	SquarePen,
 	Check,
 	Languages,
+	ClipboardCopy,
+	ClipboardPaste,
+	ClipboardCheck,
 } from 'lucide-react'
 import {
 	Dialog,
@@ -46,6 +49,7 @@ import {
 import { DataTable } from '@/components/data-table'
 import { columns } from '@/components/itemsColumns/columns'
 import TableLoader from '@/components/TableLoade'
+import { AnimatePresence, motion } from 'framer-motion'
 
 export default function ItemsPage() {
 	const [url, setUrl] = useState('')
@@ -68,6 +72,7 @@ export default function ItemsPage() {
 	const [dialogOpen, setDialogOpen] = useState(false)
 	const [translate, setTranslate] = useState(false)
 	const [edit, setEdit] = useState(false)
+	const [copied, setCopied] = useState(false)
 
 	const [data, setData] = useState([])
 	const [filter, setFilter] = useState('')
@@ -325,6 +330,28 @@ export default function ItemsPage() {
 		setBrand({})
 		setSizes([])
 		setArticle('')
+	}
+
+	const handleCopy = async () => {
+		try {
+			const json = JSON.stringify(params, null, 2)
+			await navigator.clipboard.writeText(json)
+			setCopied(true)
+			toast.success('Параметры скопированы')
+			setTimeout(() => setCopied(false), 1500)
+		} catch (err) {
+			console.error('Ошибка при копировании: ', err)
+		}
+	}
+
+	const handlePaste = async () => {
+		try {
+			const text = await navigator.clipboard.readText()
+			const parsed = JSON.parse(text)
+			if (Array.isArray(parsed)) setParams(parsed)
+		} catch (err) {
+			console.error('Ошибка при вставке: ', err)
+		}
 	}
 
 	const handleSubmit = async e => {
@@ -732,17 +759,60 @@ export default function ItemsPage() {
 													</Button>
 												</div>
 											))}
-											<Button
-												size='icon'
-												variant='secondary'
-												type='button'
-												className='self-end'
-												onClick={() =>
-													setParams(prev => [...prev, { key: '', value: '' }])
-												}
-											>
-												<Plus />
-											</Button>
+											<div className='flex items-center gap-3 self-end'>
+												<Button
+													size='icon'
+													variant='secondary'
+													type='button'
+													onClick={handlePaste}
+												>
+													<ClipboardPaste />
+												</Button>
+												<Button
+													size='icon'
+													variant='secondary'
+													type='button'
+													onClick={handleCopy}
+													className='relative'
+												>
+													<AnimatePresence mode='wait' initial={false}>
+														{copied ? (
+															<motion.div
+																key='check'
+																initial={{ opacity: 0, scale: 0.8 }}
+																animate={{ opacity: 1, scale: 1 }}
+																exit={{ opacity: 0, scale: 0.8 }}
+																transition={{ duration: 0.2 }}
+																className='absolute inset-0 flex items-center justify-center'
+															>
+																<ClipboardCheck color='#61ff4d' />
+															</motion.div>
+														) : (
+															<motion.div
+																key='copy'
+																initial={{ opacity: 0, scale: 0.8 }}
+																animate={{ opacity: 1, scale: 1 }}
+																exit={{ opacity: 0, scale: 0.8 }}
+																transition={{ duration: 0.2 }}
+																className='absolute inset-0 flex items-center justify-center'
+															>
+																<ClipboardCopy />
+															</motion.div>
+														)}
+													</AnimatePresence>
+												</Button>
+												<Button
+													size='icon'
+													variant='secondary'
+													type='button'
+													className=''
+													onClick={() =>
+														setParams(prev => [...prev, { key: '', value: '' }])
+													}
+												>
+													<Plus />
+												</Button>
+											</div>
 										</div>
 									</ScrollArea>
 
