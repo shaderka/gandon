@@ -407,7 +407,7 @@ export default function ItemsPage() {
 	return status === 'loading' ? (
 		<FullScreenLoader />
 	) : (
-		<div className='pl-[22rem] w-screen pr-15'>
+		<div className='pl-[22rem] w-screen pr-15 '>
 			<AppSidebar />
 			<h1 className='my-7 text-2xl font-semibold'>Товары</h1>
 			<Card>

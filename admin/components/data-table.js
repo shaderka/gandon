@@ -14,6 +14,11 @@ export function DataTable({ columns, data, getData }) {
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		initialState: {
+			pagination: {
+				pageSize: 8,
+			},
+		},
 	})
 
 	return (
