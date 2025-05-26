@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
+
 import {
 	Plus,
 	Search,
@@ -24,6 +25,7 @@ import {
 	ClipboardCopy,
 	ClipboardPaste,
 	ClipboardCheck,
+	GripVertical,
 } from 'lucide-react'
 import {
 	Dialog,
@@ -39,7 +41,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Toggle } from '@/components/ui/toggle'
 import {
 	ContextMenu,
@@ -51,6 +52,67 @@ import { DataTable } from '@/components/data-table'
 import { columns } from '@/components/itemsColumns/columns'
 import TableLoader from '@/components/TableLoade'
 import { AnimatePresence, motion } from 'framer-motion'
+
+import {
+	DndContext,
+	closestCenter,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core'
+import {
+	SortableContext,
+	useSortable,
+	verticalListSortingStrategy,
+	arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
+function SortableItem({ param, index, onKeyChange, onValueChange, onRemove }) {
+	const { attributes, listeners, setNodeRef, transform, transition } =
+		useSortable({ id: String(index) })
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition: transition || 'transform 200ms ease',
+		willChange: 'transform',
+	}
+
+	return (
+		<motion.div
+			layout
+			ref={setNodeRef}
+			style={style}
+			className='flex items-center gap-4 p-3 rounded-md shadow'
+		>
+			<span
+				{...attributes}
+				{...listeners}
+				className='cursor-grab text-muted-foreground'
+			>
+				<GripVertical />
+			</span>
+			<Input
+				placeholder='Ключ'
+				value={param.key}
+				onChange={e => onKeyChange(index, e.target.value)}
+			/>
+			<Input
+				placeholder='Значение'
+				value={param.value}
+				onChange={e => onValueChange(index, e.target.value)}
+			/>
+			<Button
+				size='icon'
+				variant='secondary'
+				type='button'
+				onClick={() => onRemove(index)}
+			>
+				<Trash2 className='text-destructive' />
+			</Button>
+		</motion.div>
+	)
+}
 
 export default function ItemsPage() {
 	const [url, setUrl] = useState('')
@@ -91,6 +153,17 @@ export default function ItemsPage() {
 	useEffect(() => {
 		getData()
 	}, [])
+
+	const sensors = useSensors(useSensor(PointerSensor))
+
+	const handleDragEnd = event => {
+		const { active, over } = event
+		if (!over || active.id === over.id) return
+
+		const oldIndex = Number(active.id)
+		const newIndex = Number(over.id)
+		setParams(items => arrayMove(items, oldIndex, newIndex))
+	}
 
 	const getData = async () => {
 		fetch('/api/items')
@@ -742,30 +815,27 @@ export default function ItemsPage() {
 													className=' h-15'
 												/>
 											</div>
-											{params.map((param, index) => (
-												<div key={index} className='flex items-center gap-8'>
-													<Input
-														value={param.key}
-														onChange={e =>
-															handleKeyChange(index, e.target.value)
-														}
-													/>
-													<Input
-														value={param.value}
-														onChange={e =>
-															handleValueChange(index, e.target.value)
-														}
-													/>
-													<Button
-														size='icon'
-														variant='secondary'
-														type='button'
-														onClick={() => handleRemove(index)}
-													>
-														<Trash2 />
-													</Button>
-												</div>
-											))}
+											<DndContext
+												sensors={sensors}
+												collisionDetection={closestCenter}
+												onDragEnd={handleDragEnd}
+											>
+												<SortableContext
+													items={params.map((_, index) => String(index))}
+													strategy={verticalListSortingStrategy}
+												>
+													{params.map((param, index) => (
+														<SortableItem
+															key={index}
+															index={index}
+															param={param}
+															onKeyChange={handleKeyChange}
+															onValueChange={handleValueChange}
+															onRemove={handleRemove}
+														/>
+													))}
+												</SortableContext>
+											</DndContext>
 											<div className='flex items-center gap-3 self-end'>
 												<Button
 													size='icon'
