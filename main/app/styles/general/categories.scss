@@ -1,0 +1,58 @@
+@font-face {
+  src: url("../../../fonts/ManegeDemo-Light.ttf");
+  font-family: "ManageDemo-Light";}
+.categories-container {
+  width: 1860px;
+  margin: auto;
+  overflow: hidden;
+  user-select: none;
+
+  .slider {
+    display: flex;
+    transition: transform 0.5s ease;
+    cursor: pointer;
+
+    &.dragging {
+      transition: none;
+      cursor: grabbing;
+    }
+  }
+
+  .card {
+    flex: 0 0 600px;
+    margin: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
+    background: #f9f9f9;
+    height: 600px;
+    background-size: cover;
+    position: relative;
+    color: white;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.13);
+      border-radius: 8px;
+    }
+
+    h3 {
+      position: relative;
+      z-index: 1;
+      font-size: 36px;
+      margin-bottom: 10px;
+      font-family: "ManageDemo-Light", "sans-serif";
+    }
+
+    p {
+      position: relative;
+      z-index: 1;
+    }
+  }}
+

@@ -1,0 +1,58 @@
+@property --k {
+  syntax: '<number>';
+  initial-value: -1;
+  inherits: true;
+}
+
+@property --ang {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  scrollbar-width: none;
+  height: calc(var(--n) * 100%);
+}
+
+.body, header, main, section, article, figure {
+  display: grid;
+}
+
+.body {
+  --dir: 0;
+  grid-template-rows: max-content 1fr max-content;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  color: #dedede;
+  font: clamp(0.625em, 3vmin, 1.5em) / 1.25 saira, sans-serif;
+  animation: k 1s linear;
+  animation-timeline: scroll();
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #000;
+    filter: url(#grain);
+    content: '';
+  }
+
+  @media (max-aspect-ratio: 2 / 3) {
+    --dir: 1;
+  }
+}
+
+/* остальной SCSS без изменений */
+
+kbd {
+  padding: 2px;
+  background: rgba(0 0 0 / 0.35);
+  font: 1.1em / 1.2 ubuntu mono, consolas, monaco, monospace;
+}

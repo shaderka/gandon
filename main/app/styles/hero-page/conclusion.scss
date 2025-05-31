@@ -1,0 +1,173 @@
+.conclusion-container {
+
+    width: 100%;
+    min-height: 700px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: self-start;
+    justify-content:center;
+    margin: 0 auto;
+    padding: 40px 20px;
+    gap: 1px;
+
+}
+.woman-image {
+
+    object-fit: cover;
+}
+
+
+.advantages-section {
+    flex: 1;
+    max-width: 600px;
+    margin-bottom: 50px;
+
+}
+
+.advantages-title {
+    font-size: 2rem;
+    color: #000000;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.advantages-title::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 3px;
+    background-color: #ffffff;
+}
+
+.advantages-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+}
+
+.advantages-item {
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: black;
+}
+
+.advantages-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.advantages-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    color: #27ae60;
+    flex-shrink: 0;
+}
+
+
+@media (max-width: 768px) {
+    .conclusion-container {
+        flex-direction: column;
+        padding: 30px 15px;
+        gap: 30px;
+    }
+
+    .woman-image {
+        width: 100%;
+        height: auto;
+    }
+
+    .advantages-title {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+
+    .advantages-item {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+}
+.products-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    margin-top: 30px;
+    background: linear-gradient(135deg, #1c1c1c, #423f3f);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.products-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+   
+}
+
+.products-button:active {
+    transform: translateY(1px);
+}
+
+.button-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+.products-button:hover .button-icon {
+    transform: translateX(5px);
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.products-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.products-button:hover::after {
+    opacity: 1;
+    animation: pulse 1.5s infinite;
+}
+
+/* Адаптивность для кнопки */
+@media (max-width: 768px) {
+    .products-button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin-top: 20px;
+    }
+}

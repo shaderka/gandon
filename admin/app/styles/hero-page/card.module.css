@@ -1,0 +1,25 @@
+.cardcontainer {
+    width: 300px;
+    height: 400px;
+    background-color: rgba(80, 80, 91, 0);
+    border-radius: 20px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+
+}
+.desc {
+font-size: 26px;
+}
+.price {
+   margin-right: 50%;
+    margin-top: 20%;
+}
+.cardcontainer:hover {
+
+    box-shadow: #cbbebe 2px 2px 2px 2px;
+}

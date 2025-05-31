@@ -1,0 +1,15 @@
+.profile-container {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: white;
+  font-family: 'Bahnschrift', sans-serif;
+}
+
+.main-content {
+  display: flex;
+  gap: 40px;
+  padding: 4rem 6%;
+
+  align-items: flex-start;
+}
+

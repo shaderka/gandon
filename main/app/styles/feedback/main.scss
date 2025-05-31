@@ -1,0 +1,103 @@
+.feedback-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  font-family: Bahnschrift;
+  background: #f9fafb;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.feedback-box {
+  background-color: #fff;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  color: black;
+}
+
+.feedback-box h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-box .description {
+  font-size: 1.1rem;
+  color: #000000;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #000000;
+}
+
+.form-group textarea {
+  width: 100%;
+  height: 180px;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  resize: none;
+  color:black ;
+  transition: border-color 0.3s;
+}
+
+.form-group textarea:focus {
+  border-color: #0c0c0c;
+  outline: none;
+}
+
+.form-group textarea.error {
+  border-color: #d64545;
+}
+
+.error-message {
+  color: #d64545;
+  margin-top: 0.5rem;
+}
+
+.submit-button,
+.success-message button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-button:hover,
+.success-message button:hover {
+  background-color: #000000;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.success-message {
+  text-align: center;
+}
