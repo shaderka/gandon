@@ -57,8 +57,7 @@ export const columns = ({ refreshItems, onEdit }) => [
 				await fetch(`/api/items/${product.spuId}`, {
 					method: 'DELETE',
 				})
-				window.location.reload()
-				//refreshProducts()
+				refreshItems()
 			}
 			return (
 				<>

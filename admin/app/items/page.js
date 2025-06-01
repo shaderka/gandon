@@ -6,10 +6,11 @@ import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import axios from 'axios'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { columns as columnsFn } from '@/components/itemsColumns/columns'
 
 import {
 	Plus,
@@ -169,27 +170,24 @@ export default function ItemsPage() {
 		fetch('/api/items')
 			.then(res => res.json())
 			.then(async res => {
-				const rawDat = await Promise.all(
-					res.map(async item => {
-						const newItem = { ...item }
-						const response = await fetch('/api/categories', {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ catId: item.category }),
-						})
-						const cats = await response.json()
-						newItem.catName = cats[0]?.name
-						return newItem
-					})
-				)
-				setData(rawDat)
+				// const rawDat = await Promise.all(
+				// 	res.map(async item => {
+				// 		const newItem = { ...item }
+				// 		const response = await fetch('/api/categories', {
+				// 			method: 'POST',
+				// 			headers: { 'Content-Type': 'application/json' },
+				// 			body: JSON.stringify({ catId: item.category }),
+				// 		})
+				// 		const cats = await response.json()
+				// 		newItem.catName = cats[0]?.name
+				// 		return newItem
+				// 	})
+				// )
+				// setData(rawDat)
+				setData(res)
 				setTableLoad(false)
 			})
 	}
-
-	const filtered = data.filter(item =>
-		item.title?.toLowerCase().includes(filter.toLowerCase())
-	)
 
 	async function translateClient(text) {
 		const res = await fetch('/api/translate', {
@@ -376,6 +374,15 @@ export default function ItemsPage() {
 		setDialogOpen(true)
 	}
 
+	const columns = useMemo(
+		() =>
+			columnsFn({
+				onEdit: handleEdit,
+				refreshItems: getData,
+			}),
+		[handleEdit]
+	)
+
 	const handleClose = isOpen => {
 		setDialogOpen(isOpen)
 		if (edit) {
@@ -489,6 +496,7 @@ export default function ItemsPage() {
 						<div className='flex items-center w-[40%] gap-3'>
 							<Search />
 							<Input
+								type='text'
 								placeholder='Поиск...'
 								value={filter}
 								onChange={e => setFilter(e.target.value)}
@@ -906,9 +914,11 @@ export default function ItemsPage() {
 						<TableLoader />
 					) : (
 						<DataTable
-							columns={columns({ refreshItems: getData, onEdit: handleEdit })}
-							data={filtered}
-						></DataTable>
+							columns={columns}
+							data={data}
+							globalFilter={filter}
+							setGlobalFilter={setFilter}
+						/>
 					)}
 				</CardContent>
 			</Card>
